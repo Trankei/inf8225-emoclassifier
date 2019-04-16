@@ -36,7 +36,7 @@ test = open('text.valid','w')
 
 redditDatasetFiles = ["processed_creepy.csv", "processed_gore.csv", "processed_happy.csv", "processed_rage.csv"]
 for datasetFile in redditDatasetFiles:
-    with open("../../data/reddit_data/" + datasetFile, mode='r', encoding = "ISO-8859-1") as csv_file:  
+    with open("./data/reddit_data/" + datasetFile, mode='r', encoding = "ISO-8859-1") as csv_file:  
         csv_reader = csv.DictReader(csv_file)
         line = 0
         for row in csv_reader:
@@ -49,9 +49,9 @@ for datasetFile in redditDatasetFiles:
                 else:
                     print(f'__label__{row["subreddit"].encode("UTF-8")} {text.encode("UTF-8")}', file=train)
 
-flickrDatasetFiles = findCsvFilenames("./processed")
+flickrDatasetFiles = findCsvFilenames("./data/flickr_data/crawled")
 for datasetFile in flickrDatasetFiles:
-    with open("../../data/flickr_data/processed/" + datasetFile, mode='r', encoding = "ISO-8859-1") as csv_file:  
+    with open("./data/flickr_data/crawled/" + datasetFile, mode='r', encoding = "ISO-8859-1") as csv_file:  
         csv_reader = csv.DictReader(csv_file, fieldnames=["emotion", "image", "num_of_disagrees", "num_of_agrees", "text"])
         line = 0
         for row in csv_reader:
