@@ -2,6 +2,7 @@ import csv
 import re
 import string
 from os import listdir
+import pickle
 
 def preprocessText(text):
     if text == None:
@@ -31,37 +32,26 @@ def findCsvFilenames( path_to_dir, suffix=".csv" ):
     filenames = listdir(path_to_dir)
     return [ filename for filename in filenames if filename.endswith( suffix ) ]
 
-train = open('text.train','w')  
-test = open('text.valid','w')
+train = open('../../processed_data/text.train','w')  
+valid = open('../../processed_data/text.valid','w')
 
-redditDatasetFiles = ["processed_creepy.csv", "processed_gore.csv", "processed_happy.csv", "processed_rage.csv"]
-for datasetFile in redditDatasetFiles:
-    with open("./data/reddit_data/" + datasetFile, mode='r', encoding = "ISO-8859-1") as csv_file:  
-        csv_reader = csv.DictReader(csv_file)
-        line = 0
-        for row in csv_reader:
-            line = line + 1
-            if line > 0:
-                text = preprocessText(row["title"])
-                # Split data into train and validation
-                if line % 16 == 0:
-                    print(f'__label__{row["subreddit"].encode("UTF-8")} {text.encode("UTF-8")}', file=test)
-                else:
-                    print(f'__label__{row["subreddit"].encode("UTF-8")} {text.encode("UTF-8")}', file=train)
+# Load labels
+train_labels = pickle.load(open('../../processed_data/training_labels.pkl', 'rb'))
+valid_labels = pickle.load(open('../../processed_data/testing_labels.pkl', 'rb'))
 
-flickrDatasetFiles = findCsvFilenames("./data/flickr_data/crawled")
-for datasetFile in flickrDatasetFiles:
-    with open("./data/flickr_data/crawled/" + datasetFile, mode='r', encoding = "ISO-8859-1") as csv_file:  
-        csv_reader = csv.DictReader(csv_file, fieldnames=["emotion", "image", "num_of_disagrees", "num_of_agrees", "text"])
-        line = 0
-        for row in csv_reader:
-            line = line + 1
-            if line > 0:
-                text = preprocessText(row["text"])
-                if text != "":
-                    # Split data into train and validation
-                    if line % 16 == 0:
-                        print(f'__label__{row["emotion"].encode("UTF-8")} {text.encode("UTF-8")}', file=test)
-                    else:
-                        print(f'__label__{row["emotion"].encode("UTF-8")} {text.encode("UTF-8")}', file=train)
+# Load text
+train_text = pickle.load(open('../../processed_data/text_training.pkl', 'rb'))
+valid_text = pickle.load(open('../../processed_data/text_testing.pkl', 'rb'))
+
+line = 0
+for txt in train_text:
+    text = preprocessText(txt[0])
+    print(f'__label__{train_labels[line][0].encode("UTF-8")} {text.encode("UTF-8")}', file=train)
+    line = line + 1
+    
+line = 0
+for txt in valid_text:    
+    text = preprocessText(txt[0])
+    print(f'__label__{train_labels[line][0].encode("UTF-8")} {text.encode("UTF-8")}', file=valid)
+    line = line + 1
 
