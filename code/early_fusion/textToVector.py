@@ -14,7 +14,6 @@ class TextToVector(nn.Module):
     def __init__(self, pretrained_word_vectors):
         super(TextToVector, self).__init__()
         self.embedding, self.num_embeddings, self.embedding_dim = create_emb_layer(pretrained_word_vectors)
-
         
     def forward(self, words):
         word_vectors = []
