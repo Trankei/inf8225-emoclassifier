@@ -1,2 +1,4 @@
 models/*
 word_vectors/*
+
+*.pyc
