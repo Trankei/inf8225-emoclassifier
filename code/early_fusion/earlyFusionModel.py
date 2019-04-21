@@ -11,10 +11,6 @@ class EarlyFusionModel(nn.Module):
         self.softmax_layer = nn.Softmax()
         
     def forward(self, image_vect, text):
-        # Convert image to vector
-        # Modify code if not compatible with Keras image to vector model
-        #image_vect = self.image_to_vect(image)
-
         # Convert text to vector
         # Note: input text should be a tensor of integers obtained from word dictionary lookup (see word_dictionary in earlyFusionTraining.py)
         text_vect = self.text_to_vect(text)
