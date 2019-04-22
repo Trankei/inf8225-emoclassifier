@@ -46,9 +46,12 @@ text_to_vect_model = TextToVector(pretrained_word_vectors)
 early_fusion_model = EarlyFusionModel(image_vector_dim, text_to_vect_model, text_vector_dim, num_classes)
 
 def train(model):
+    model.train()
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.0001, momentum=0.9)
-    for epoch in range(10):  # loop over the dataset multiple times
+    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
+    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.1)
+    for epoch in range(5):  # loop over the dataset multiple times
+        lr_scheduler.step()
         running_loss = 0.0
         for i, label in enumerate(one_hot_training_labels):
             
@@ -88,6 +91,7 @@ def train(model):
     return model
 
 def test(model):
+    model.eval()
     correct = 0
     total = 0
     targets = []
@@ -134,11 +138,11 @@ def test(model):
     loss = criterion_test(predictions, targets)
     return loss, precision
 
-# early_fusion_model = torch.load(f'../../models/early_fusion_model.tar')
+# early_fusion_model = torch.load(f'../../models/early_fusion_model.bin')
 early_fusion_model = train(early_fusion_model)
 loss, precision = test(early_fusion_model)
-torch.save(early_fusion_model, f'../../models/early_fusion_model.tar')
-print('Accuracy of the network on the 639 test examples: %d %%' % (precision))
+torch.save(early_fusion_model, f'../../models/early_fusion_model.bin')
+print('Accuracy of the network on the 639 test examples: %.2f %%' % (precision))
 print('Loss of the network on the 639 test examples: %.3f ' % (loss))
 
 

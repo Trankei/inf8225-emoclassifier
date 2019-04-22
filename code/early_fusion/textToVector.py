@@ -1,4 +1,5 @@
 import torch.nn as nn
+import numpy as np
 import torch
 
 def create_emb_layer(pretrained_word_vectors, non_trainable=False):
@@ -14,17 +15,23 @@ class TextToVector(nn.Module):
     def __init__(self, pretrained_word_vectors):
         super(TextToVector, self).__init__()
         self.embedding, self.num_embeddings, self.embedding_dim = create_emb_layer(pretrained_word_vectors)
+        self.dropout = nn.Dropout(0.25)
         
     def forward(self, words):
         word_vectors = []
         for word in words:
             word_vector = self.embedding(word)
+            word_vector = self.dropout(word_vector)
             word_vectors.append(word_vector.reshape(1, self.embedding_dim))
-    
-        # Concatenate all word vectors
-        words_matrix = torch.cat(word_vectors, dim=0)
 
-        # Aggregation layer with component-wise max as a function
-        words_vector = words_matrix.max(dim=0)[0]
+        if word_vectors:
+            # Concatenate all word vectors
+            words_matrix = torch.cat(word_vectors, dim=0)
+            # Aggregation layer with component-wise max as a function
+            words_vector = words_matrix.max(dim=0)[0]
+        else :
+            words_vector = torch.zeros([1, 200])
+        
+        
 
         return words_vector
