@@ -112,9 +112,7 @@ def test(model):
                     array_text.append(idx)
             if len(array_text) > 0:
                 tensor_text = torch.LongTensor(array_text)
-                print(array_text)
 
-                
                 # Get model prediction
                 output = model(tensor_image, tensor_text)
                 output = output.reshape((-1,4))
