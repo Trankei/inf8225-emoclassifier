@@ -2,14 +2,13 @@ from jointFusionModel import JointFusionModel
 from textToVector import TextToVector
 from textPreprocessing import preprocessText
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import train_test_split
 import torch.nn as nn
 import torch.optim as optim
 import gloveLoad
 import pickle
 import torch
 import numpy as np
-
-from sklearn.model_selection import train_test_split
 
 # Image dataset
 image_training_features = pickle.load(open('../../processed_data/image_training_features.pkl', 'rb'))
@@ -32,20 +31,15 @@ one_hot_testing_labels = enc.transform(testing_labels)
 image_features_test, image_features_valid, one_hot_labels_test, one_hot_labels_valid = train_test_split(image_testing_features, one_hot_testing_labels, test_size=0.5, random_state=42)
 text_test, text_valid, one_hot_labels_test, one_hot_labels_valid = train_test_split(text_testing, one_hot_testing_labels, test_size=0.5, random_state=42)
 
-
 # Number of emotion classes
 num_classes = 4
-
-# Image to vector model
-# Images already saved as features, don't need the model
-# image_to_vect_model = pickle.load(open('../../models/image_classifier_71precision.pkl', 'rb'))
 
 # Image vector dim, Text vector dim
 image_vector_dim = 2048
 text_vector_dim = 200
 
 all_text = np.append(text_training, text_testing).reshape((-1, 1))
-# word_dictionary: Mapping words to index in vocabulary (to convert words to indexes before passing to model)
+# Word_dictionary: Mapping words to index in vocabulary (to convert words to indexes before passing to model)
 word_dictionary, pretrained_word_vectors = gloveLoad.create_dictionary(all_text)
 text_to_vect_model = TextToVector(pretrained_word_vectors)
 
@@ -145,8 +139,7 @@ def train(model):
             running_loss += loss.item()
             if i % 400 == 399:    # print loss every 400 mini-batches
                 print('[%d, %5d] loss: %.3f' %(epoch + 1, i + 1, running_loss / 400))
-                running_loss = 0.0
-        
+                running_loss = 0.0    
         model.eval()
         loss, precision = test(model, image_features_valid, text_valid, one_hot_labels_valid) 
         if precision > best_precision :
@@ -154,10 +147,7 @@ def train(model):
             best_model = type(model)(image_vector_dim, text_to_vect_model, text_vector_dim, num_classes)
             best_model.load_state_dict(model.state_dict())
             cnt = 0
-            print('best precision')
-            print(best_precision)
         else :
-            print('step')
             lr_scheduler.step()
             cnt = cnt + 1
         if cnt > 3 :
@@ -246,12 +236,11 @@ def test_only_image(model, image_dataset, one_hot_labels_dataset):
     loss = criterion_test(predictions, targets)
     return loss, precision
 
-# joint_fusion_model = torch.load('../../models/join_fusion_model.bin')
-#joint_fusion_model = train(joint_fusion_model)
-#loss, precision = test(joint_fusion_model, image_features_test, text_test, one_hot_labels_test)  
-#torch.save(joint_fusion_model, '../../models/join_fusion_model.bin')
+#joint_fusion_model = torch.load('../../models/join_fusion_model.bin')
+joint_fusion_model = train(joint_fusion_model)
+torch.save(joint_fusion_model, '../../models/join_fusion_model.bin')
 
-joint_fusion_model = torch.load('../../models/join_fusion_model.bin')
+loss, precision = test(joint_fusion_model, image_features_test, text_test, one_hot_labels_test)  
 print('Accuracy of the network with two modalities: %.2f %%' % (precision))
 print('Loss of the network with two modalities: %.3f ' % (loss))
 loss, precision = test_only_text(joint_fusion_model, text_test, one_hot_labels_test)
