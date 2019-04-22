@@ -50,8 +50,8 @@ for txt in train_text:
     line = line + 1
     
 line = 0
-for txt in valid_text:    
+for txt in valid_text:
     text = preprocessText(txt[0])
-    print(f'__label__{train_labels[line][0].encode("UTF-8")} {text.encode("UTF-8")}', file=valid)
+    print(f'__label__{valid_labels[line][0].encode("UTF-8")} {text.encode("UTF-8")}', file=valid)
     line = line + 1
 
