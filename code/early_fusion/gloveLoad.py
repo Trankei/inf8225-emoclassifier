@@ -6,8 +6,8 @@ from textPreprocessing import preprocessText
 
 glove_word_vectors_path = f'../../word_vectors/glove.twitter.27B.200d.txt'
 glove_data_path = f'../../word_vectors/glove.dat'
-glove_words_path = f'../../processed_data/glove_words.pkl'
-glove_idx_path = f'../../processed_data/glove_idx.pkl'
+glove_words_path = f'../../word_vectors/glove_words.pkl'
+glove_idx_path = f'../../word_vectors/glove_idx.pkl'
 
 # Reference : https://medium.com/@martinpella/how-to-use-pre-trained-word-embeddings-in-pytorch-71ca59249f76
 def parse_glove():
@@ -67,5 +67,7 @@ def create_dictionary(text_training):
             words_found += 1
         except KeyError:
             word_vectors[i] = np.random.normal(scale=0.6, size=(word_vector_dim, ))
+
+    print(f'{words_found} word vocabulary created')
 
     return dictionary, word_vectors

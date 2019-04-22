@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torchvision import transforms
 from textToVector import TextToVector
 
 class EarlyFusionModel(nn.Module):
@@ -14,12 +15,11 @@ class EarlyFusionModel(nn.Module):
         # Convert text to vector
         # Note: input text should be a tensor of integers obtained from word dictionary lookup (see word_dictionary in earlyFusionTraining.py)
         text_vect = self.text_to_vect(text)
-        text_vect = text_vect.type(torch.LongTensor)
 
         # Concatenation of image and text vector (Fusion layer)
         concat_vect = torch.cat((image_vect, text_vect), dim=0)
         # Pass through linear layer
-        output = self.linear_layer(concat_vect.type(torch.FloatTensor))
+        output = self.linear_layer(concat_vect)
         # Softmax
         output = self.softmax_layer(output)
         return output

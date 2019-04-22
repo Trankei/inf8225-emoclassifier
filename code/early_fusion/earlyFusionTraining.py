@@ -37,8 +37,9 @@ num_classes = 4
 image_vector_dim = 2048
 text_vector_dim = 200
 
+all_text = np.append(text_training, text_testing).reshape((-1, 1))
 # word_dictionary: Mapping words to index in vocabulary (to convert words to indexes before passing to model)
-word_dictionary, pretrained_word_vectors = gloveLoad.create_dictionary(text_training)
+word_dictionary, pretrained_word_vectors = gloveLoad.create_dictionary(all_text)
 text_to_vect_model = TextToVector(pretrained_word_vectors)
 
 # Get early fusion model
@@ -53,7 +54,7 @@ def train(model):
             
             # Get the inputs : image
             image_feature = image_training_features[i]
-            tensor_image = torch.LongTensor(image_feature)
+            tensor_image = torch.FloatTensor(image_feature)
             
             # Get the inputs : text
             text = text_training[i][0]
@@ -96,30 +97,37 @@ def test(model):
         for i, test_label in enumerate(one_hot_testing_labels):
             # Get the inputs : image
             image_feature = image_testing_features[i]
-            tensor_image = torch.LongTensor(image_feature)
+            tensor_image = torch.FloatTensor(image_feature)
             
             # Get the inputs : text
-            text = text_training[i][0]
+            text = text_testing[i][0]
             text = preprocessText(text)
             array_text = []
-            for word in text.split(): 
-                idx = word_dictionary[word]
-                array_text.append(idx)
-            tensor_text = torch.LongTensor(array_text)
-            
-            # Get model prediction
-            output = model(tensor_image, tensor_text)
-            output = output.reshape((-1,4))
-            _, predicted = torch.max(output.data, 1)
-            predictions.append(output.numpy().squeeze())
-            
-            # Get target index
-            idx_label = np.argwhere(test_label[0] == 1)[0,1]
-            targets.append(idx_label)
-            
-            # Count correct answers
-            correct += (predicted == idx_label).sum().item()
-            total += 1
+            for word in text.split():
+                try:
+                    idx = word_dictionary[word]
+                except KeyError:
+                    print('Word not in vocabulary')
+                else:
+                    array_text.append(idx)
+            if len(array_text) > 0:
+                tensor_text = torch.LongTensor(array_text)
+                print(array_text)
+
+                
+                # Get model prediction
+                output = model(tensor_image, tensor_text)
+                output = output.reshape((-1,4))
+                _, predicted = torch.max(output.data, 1)
+                predictions.append(output.numpy().squeeze())
+                
+                # Get target index
+                idx_label = np.argwhere(test_label[0] == 1)[0,1]
+                targets.append(idx_label)
+                
+                # Count correct answers
+                correct += (predicted == idx_label).sum().item()
+                total += 1
      
     # Get precision and loss
     precision = (100 * correct / total)
@@ -128,8 +136,10 @@ def test(model):
     loss = criterion_test(predictions, targets)
     return loss, precision
 
+# early_fusion_model = torch.load(f'../../models/early_fusion_model.tar')
 early_fusion_model = train(early_fusion_model)
 loss, precision = test(early_fusion_model)
+torch.save(early_fusion_model, f'../../models/early_fusion_model.tar')
 print('Accuracy of the network on the 639 test examples: %d %%' % (precision))
 print('Loss of the network on the 639 test examples: %.3f ' % (loss))
 

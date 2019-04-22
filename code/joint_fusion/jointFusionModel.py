@@ -15,7 +15,6 @@ class JointFusionModel(nn.Module):
         # Convert text to vector
         # Note: input text should be a tensor of integers obtained from word dictionary lookup (see word_dictionary in earlyFusionTraining.py)
         text_vect = self.text_to_vect(text)
-        text_vect = text_vect.type(torch.LongTensor)
 
         # Linear projection of image features into textual feature space
         image_vect = image_vect.type(torch.FloatTensor)
