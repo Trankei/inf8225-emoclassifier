@@ -9,27 +9,33 @@ Since the models are to big to push into github you should run these codes to bu
 * numpy
 * fastText
 
+## Notes:
+> The GloVe words vectors should be downloaded from this link : http://nlp.stanford.edu/data/glove.twitter.27B.zip. The `glove.twitter.27B.200d.txt` file extracted from the downloaded zip should placed into a `word_vectors` folder in the root directory.
+
+> The dataset is already available in the `processed_data` folder. The data was built using the `TrainTestSplitData_random.ipynb`.
+
 ## Models:
-
 ### Late Fusion
-code/late_fusion/LateFusion.ipynb : Build late_fusion_models.pkl
+To generate Late Fusion model `late_fusion_models.pkl`, run
+> `code/late_fusion/LateFusion.ipynb`
 
-#### Text classifier
-code/text_classifier/textClassifierTraining.py : Build text_classifier.bin
+##### Text classifier
+To train text classifier `text_classifier.bin`, run
+> `code/text_classifier/textClassifierTraining.py`
 
-#### Image classifier
-code/image_classifier/ImageClassifierTraining.ipynb : Build image_classifier_71precision.pkl
+##### Image classifier
+To train image classifier `image_classifier_71precision.pkl`, run 
+> `code/image_classifier/ImageClassifierTraining.ipynb`
+
+### Image to vector
+To generate image vectors `inception_feature_extractor.h5` and `inception_feature_extractor.json`, run
+> `code/image_classifier/Image_to_Vect.ipynb`
 
 ### Early Fusion
-code/early_fusion/earlyFusionTraining.py : Build early_fusion_model.tar
+To train early fusion model `early_fusion_model.bin`, run 
+> `code/early_fusion/earlyFusionTraining.py`
 
 ### Joint Fusion
- code/joint_fusion/jointFusionTraining.py : Build joint_fusion_model.bin
- 
-### Image to vector
-code/image_classifier/Image_to_Vect.ipynb : Build inception_feature_extractor.h5 and inception_feature_extractor.json 
-
-Also, the GloVe words vectors should be downloaed from this link : http://nlp.stanford.edu/data/glove.twitter.27B.zip into the word_vectors directory.
-
-The dataset is already available in the "processed_data" folder. The data was built using the TrainTestSplitData_random.ipynb
+To train joint fusion model `joint_fusion_model.bin`, run
+> `code/joint_fusion/jointFusionTraining.py`
 
