@@ -1,6 +1,4 @@
-# inf8225-emoclassifier
-
-Since the models are to big to push into github you should run these codes to build the models :
+# INF8225 - Emotion classifier
 
 ## Required libraries:
 * pytorch
@@ -15,6 +13,7 @@ Since the models are to big to push into github you should run these codes to bu
 > The dataset is already available in the `processed_data` folder. The data was built using the `TrainTestSplitData_random.ipynb`.
 
 ## Models:
+Since most of the the models are to big to push into github you should run these codes to build the models
 ### Late Fusion
 To generate Late Fusion model `late_fusion_models.pkl`, run
 > `code/late_fusion/LateFusion.ipynb`
